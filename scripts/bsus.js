@@ -426,16 +426,19 @@ function updateFormatInfo(format, number) {
 			setTab(0);
 			setData(mon);
 			updateSearch(false);
+			
+			
+			if (japanese) {
+				document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo;
+			} else {
+				document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo;
+			}
+			
 		}catch(e){
 			
 		}	
 	});
 		
-    if (japanese) {
-        document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo;
-    } else {
-        document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo;
-    }
 
 }
 
