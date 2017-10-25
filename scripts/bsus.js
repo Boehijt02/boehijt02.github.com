@@ -1,8 +1,10 @@
-var items = null;
+var items;
 var totalusage;
 
 select = document.getElementById("select");
 var value = select.options[select.selectedIndex].value;
+
+updateFormatInfo(value);
 
 var mon;
 var tab = 0;
@@ -51,38 +53,6 @@ if (l == "?l=jp") {
     japanese = true;
 }
 
-
-function updateFormatInfo(format, number) {
-	
-	var formatfile = format;
-	
-	if (formatfile.startsWith("sm_")){
-		formatfile = formatfile.substring(3);
-	}
-    
-	jQuery.get('data/'+formatfile+'.txt', function(data) {
-		var allData = data.split('//');
-		totalusage = allData[1];
-		console.log(totalusage);
-		items = allData[0].split('],[');
-		for (var i = 0; i < items.length; i++){
-			items[i] = items[i].split(',');
-			for (var j = 0; j < items[i].length; j++){
-				items[i][j] = items[i][j].substring(1,items[i][j].length-1);
-			}	
-		}
-		console.log(items[0][0]);
-		console.log(items[1][4]);
-	});
-	
-    formatinfo = formatinfodict[format];
-    if (japanese) {
-        document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo;
-    } else {
-        document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo;
-    }
-
-}
 
 function createButtons() {
 
@@ -368,14 +338,7 @@ function resetData(number, resetsearch) {
         }
     }
 
-    updateFormatInfo(value);
-    mon = number;
-    
-	setTimeout(function() {
-		setTab(0);
-		setData(mon);
-		updateSearch(false);
-	}, 200);
+    updateFormatInfo(value, number);
 
 }
 
@@ -437,6 +400,44 @@ function updateSearch(cleared) {
     }
 }
 
+
+function updateFormatInfo(format, number) {
+    var formatinfo = "";
+	
+	console.log(format);
+	
+	var formatFile;
+	
+	if (format.startsWith("sm")){
+		formatFile = format.substring(3);
+	} else if (format.startsWith("oras")){
+		formatFile = format.substring(5);
+	} else {
+		formatFile = format;
+	}
+	
+	$.getScript("data/"+formatFile+".js", function() {
+		try {
+			totalusage = window[format + "_totalusage"];
+			formatinfo = formatinfodict[format];
+			items = window[format];		
+			
+			mon = number;
+			setTab(0);
+			setData(mon);
+			updateSearch(false);
+		}catch(e){
+			
+		}	
+	});
+		
+    if (japanese) {
+        document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo;
+    } else {
+        document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo;
+    }
+
+}
 
 function lookForMon(name) {
     if (name.indexOf("-Mega-Y") >= 0 || name.indexOf("-Mega-X") >= 0) {
@@ -514,11 +515,5 @@ function passfilter(string) {
 function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
-
-function setItems(newItems){
-	items = newItems;
-}
-
-updateFormatInfo(value);
 
 resetData(0);
