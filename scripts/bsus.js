@@ -120,7 +120,7 @@ function createButtons() {
             } else {
                 div.setAttribute("class", "button");
             }
-            div.setAttribute("onClick", "setData(" + i + "); document.getElementById(\"buttonlist\").innerHTML = null; createButtons();");
+            div.setAttribute("onClick", "setData(" + i + "); document.getElementById(\"buttonlist\").innerHTML = null; createButtons(); updateSearch();");
             div.setAttribute("id", "button" + i);
             if (div.innerHTML != "<img src=\"images/undefined.png\"><span class=\"pokemonbutton\">#" + (1 + i) + " - undefined</span>") {
                 document.getElementById("buttonlist").appendChild(div);
@@ -134,9 +134,6 @@ function createButtons() {
 
 
 function setData(number) {
-	
-	
-	console.log('setdata'+number);
 
     mon = number;
 
@@ -284,7 +281,6 @@ function setData(number) {
 }
 
 function setTab(number) {
-	console.log('settab');
     tab = number;
     var buttonname;
 
@@ -311,8 +307,6 @@ function setTab(number) {
 }
 
 function resetData(number, resetsearch) {
-	
-	console.log('resetdata');
 
     var value = select.options[select.selectedIndex].value;
 
@@ -347,7 +341,6 @@ function resetData(number, resetsearch) {
 }
 
 function updateSearch(cleared) {
-	console.log('updatesearch');
     document.getElementById("buttonlist").innerHTML = "";
     createButtons();
 
@@ -407,10 +400,8 @@ function updateSearch(cleared) {
 
 
 function updateFormatInfo(format, number) {
-	console.log('updateformatinfo');
-    var formatinfo = "";
 	
-	console.log(format);
+    var formatinfo = "";
 	
 	var formatFile;
 	
