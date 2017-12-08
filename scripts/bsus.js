@@ -18,7 +18,7 @@ var japanese = false;
 var l = location.search;
 
 if (l == "?l=jp") {
-    document.getElementById("title").innerHTML = "Battle Spot使用率 - ポケモンサン・ムーンレート";
+    document.getElementById("title").innerHTML = "Battle Spot使用率 - ポケモンウルトラサン・ムーンレート";
     document.getElementById("headertext").innerHTML = "Battle Spot使用率（ベータ） | <a href=\"https://boe2.github.io/bsus.html\" id=\"languagelink\"> English</a>";
     document.getElementById("aboutpage").innerHTML = "このページについて";
     document.getElementById("credits").innerHTML = "<img id=\"leftswablu\" src=\"images/swabluicon.png\">製作者 <strong>boe</strong><img id=\"rightswablu\" src=\"images/swabluicon.png\"><br><br>ポケモンサン・ムーンのレートバトルとインターネット大会の完璧な使用率を表示できるページです。<br> 使用率はPokemon Global Linkから集められています。<br><br> このページを作るにあたってプログラミングを手伝ってくれた<strong>Fischgrat</strong>、<strong>Lego</strong>、<strong>Alpha Ninja</strong>、翻訳を手伝ってくれた<strong>Yosshi</strong>、<strong>hz1016hz</strong>、<strong>youmu@poke</strong>、そして元となるbattlespotstats.comの製作者<strong>hetoord</strong>に改めて感謝を。<br> <br> 問題があれば、 boehijt@gmail.comか<a id=\"link\" href=\"http://www.smogon.com/forums/members/boehijt.228496/\">Smogon</a>かPokemon Showdown!にお問い合わせください。<br> <br> <strong>Pokemon</strong> is © 1995-2017 <strong> Nintendo</strong>";
@@ -31,6 +31,7 @@ if (l == "?l=jp") {
     formatinfodict = jpformatinfodict;
 
     var selector = document.getElementById("select").innerHTML;
+    selector = replaceAll(selector, "Current Ladders", "現在のレート");
     selector = replaceAll(selector, "Current Season", "現在のシーズン");
     selector = replaceAll(selector, "Past Seasons", "前のシーズン");
     selector = replaceAll(selector, "Season", "シーズン");
@@ -101,7 +102,15 @@ function createButtons() {
                 pokedexNo = items[i][0].substring(0, items[i][0].length - 2);
             } else if (englishname == "Lycanroc-Midnight") {
                 pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-m";
-            } else if (englishname.indexOf("-T") >= 0) {
+            } else if (englishname == "Lycanroc-Dusk") {
+                pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-d";
+			} else if (englishname == "Necrozma-Dawn Wings") {
+				pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-dw";
+			} else if (englishname == "Necrozma-Dusk Mane") {
+				pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-dm";			
+			} else if (englishname == "Necrozma-Ultra") {
+				pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-u";
+			} else if (englishname.indexOf("-T") >= 0) {
                 pokedexNo = items[i][0].substring(0, items[i][0].length - 2) + "-s";
             } else if (englishname.indexOf("Silvally") >= 0 && items[i][0].length == 6) {
                 pokedexNo = items[i][0].substring(0, items[i][0].length - 3);
@@ -260,13 +269,21 @@ function setData(number) {
 
         document.getElementById("td62").innerHTML = "";
         document.getElementById("td63").innerHTML = "";
+		document.getElementById("noitems").innerHTML = "";
     } else if (tab == 5 || tab == 7 || tab == 8 && document.getElementById("td2").innerHTML != "") {
+		
+		document.getElementById("noitems").innerHTML = "";
         if (japanese) {
             document.getElementById("noitems").innerHTML = "注記：ポケモンの使用率を見たいときは、名前をクリックしてください";
         } else {
             document.getElementById("noitems").innerHTML = "Note: click on a Pokemon's name to view its stats.";
         }
-    } else if (tab == 4 || tab == 5) {
+    } else {
+        document.getElementById("noitems").innerHTML = "";
+    }
+	
+    document.getElementById("noitems").innerHTML = "";
+	if (tab == 4 || tab == 5) {
         if (document.getElementById("td2").innerHTML == "") {
             if (japanese) {
                 document.getElementById("noitems").innerHTML = "このポケモンは対戦であまり強くないらしいです・・・";
@@ -274,10 +291,8 @@ function setData(number) {
                 document.getElementById("noitems").innerHTML = "This Pokemon does not appear to be particularly successful in battles...";
             }
         }
-    } else {
-        document.getElementById("noitems").innerHTML = "";
-    }
-
+	}
+	
 }
 
 function setTab(number) {
@@ -405,11 +420,13 @@ function updateFormatInfo(format, number) {
 	
 	var formatFile;
 	
-	if (format.startsWith("sm")){
+	if (format.indexOf("sm") == 0){
 		formatFile = format.substring(3);
-	} else if (format.startsWith("oras")){
+	} else if (format.indexOf("oras") == 0){
 		formatFile = format.substring(5);
-	} else {
+	} else if (format.indexOf("usum") == 0){
+		formatFile = format.substring(5);
+	}else {
 		formatFile = format;
 	}
 	
@@ -423,11 +440,21 @@ function updateFormatInfo(format, number) {
 			setTab(0);
 			updateSearch(false);
 			
+			var lastupdate = "";
+			if (window[format + "_lastupdate"] != undefined){
+				if (!japanese){
+					lastupdate = " - Last updated: " + window[format + "_lastupdate"] + " CET";		
+				}
+				if (japanese) {					
+					lastupdate = " - 最後の更新: " + window[format + "_lastupdate"] + " CET";	
+				}			
+			}
+			
 			
 			if (japanese) {
-				document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo;
+				document.getElementById("formatinfo").innerHTML = "選んだルール： " + formatinfo + lastupdate;
 			} else {
-				document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo;
+				document.getElementById("formatinfo").innerHTML = "Selected format: " + formatinfo + lastupdate;
 			}
 			
 		}catch(e){
@@ -500,6 +527,10 @@ function passfilter(string) {
             string = string.substring(0, string.length - 5);
         }
     }
+	
+	if (tab == 0 && string == "Metronome"){
+		string = "Metronomemove";
+	}
     var jp = jpdict[string];
     if (string == "" || string == " ") {
         jp = "";
